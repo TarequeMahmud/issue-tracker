@@ -1,6 +1,10 @@
 const { default: mongoose } = require("mongoose");
 
 const issueSchema = new mongoose.Schema({
+  project: {
+    type: String,
+    required: true,
+  },
   issue_title: {
     type: String,
     required: true,
@@ -20,6 +24,10 @@ const issueSchema = new mongoose.Schema({
   status_text: {
     type: String,
     required: false,
+  },
+  open: {
+    type: Boolean,
+    default: true,
   },
 });
 
