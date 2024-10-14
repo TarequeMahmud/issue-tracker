@@ -6,31 +6,41 @@ module.exports = function (app) {
   app
     .route("/api/issues/:project")
 
-    .get(function (req, res) {
-      let project = req.params.project;
+    .get(async function (req, res) {
+      let filter = req.query;
+      if (filter.open) {
+        filter.open = filter.open === "true" ? true : false;
+      }
+
+      filter.project = req.params.project;
+      console.log(req.params.project);
+
+      try {
+        const findIssues = await Issue.find(filter).select("-project");
+
+        const data = [...findIssues];
+        return res.json(data);
+      } catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: "had error getting issue array" });
+      }
     })
 
     .post(async function (req, res) {
       let project = req.params.project;
-      const {
-        issue_title: issueTitle,
-        issue_text: issueText,
-        created_by: createdBy,
-        assigned_to: assignedTo,
-        status_text: statusText,
-      } = req.body;
-      if (!issueTitle || !issueText || !createdBy) {
+      const { issue_title, issue_text, created_by, assigned_to, status_text } =
+        req.body;
+      if (!issue_title || !issue_text || !created_by) {
         return res.json({ error: "required field(s) missing" });
       }
       const issue = {
         project: project,
-        issue_title: issueTitle,
-        issue_text: issueText,
-        created_by: createdBy,
-        assigned_to: assignedTo,
-        status_text: statusText,
+        issue_title,
+        issue_text,
+        created_by,
+        assigned_to,
+        status_text,
       };
-      console.log(issue);
 
       try {
         const newIssue = Issue(issue);
