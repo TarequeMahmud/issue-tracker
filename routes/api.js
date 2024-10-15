@@ -15,11 +15,9 @@ module.exports = function (app) {
       filter.project = req.params.project;
 
       try {
-        const findIssues = await Issue.find(filter).select("-project");
-        if (!findIssues) return res.json({ error: "could not update" });
+        const findIssues = await Issue.find(filter).select("-project -__v");
 
-        const data = [...findIssues];
-        return res.json(data);
+        return res.json(findIssues);
       } catch (error) {
         console.log(error);
         return res.status(500).json({ error: "had error getting issue array" });
@@ -65,7 +63,6 @@ module.exports = function (app) {
     })
 
     .put(async function (req, res) {
-      let project = req.params.project;
       const {
         _id,
         issue_title,
@@ -118,7 +115,6 @@ module.exports = function (app) {
     })
 
     .delete(async function (req, res) {
-      let project = req.params.project;
       const { _id } = req.body;
       if (!_id) return res.json({ error: "missing _id" });
       try {

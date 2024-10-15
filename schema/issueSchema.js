@@ -20,11 +20,11 @@ const issueSchema = new mongoose.Schema(
     },
     assigned_to: {
       type: String,
-      required: false,
+      default: "",
     },
     status_text: {
       type: String,
-      required: false,
+      default: "",
     },
     open: {
       type: Boolean,
@@ -36,3 +36,4 @@ const issueSchema = new mongoose.Schema(
 
 const Issue = mongoose.model("Issue", issueSchema);
 module.exports = Issue;
+//I used there required false which cause major fault

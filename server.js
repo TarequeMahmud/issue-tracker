@@ -6,19 +6,10 @@ const expect = require("chai").expect;
 const cors = require("cors");
 require("dotenv").config();
 
-const mongoose = require("mongoose");
+const { default: mongoose } = require("mongoose");
 mongoose.connect(process.env.MONGO_URI, {
-  useUnifiedTopology: true,
   useNewUrlParser: true,
-});
-const db = mongoose.connection;
-
-db.on("error", (error) => {
-  console.error("MongoDB connection error:", error);
-});
-
-db.once("open", () => {
-  console.log("Connected to MongoDB database");
+  useUnifiedTopology: true,
 });
 
 const apiRoutes = require("./routes/api.js");
