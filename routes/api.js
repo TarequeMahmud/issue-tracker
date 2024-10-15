@@ -64,8 +64,57 @@ module.exports = function (app) {
       }
     })
 
-    .put(function (req, res) {
+    .put(async function (req, res) {
       let project = req.params.project;
+      const {
+        _id,
+        issue_title,
+        issue_text,
+        created_by,
+        assigned_to,
+        status_text,
+        open = undefined,
+      } = req.body;
+      if (!_id) return res.json({ error: "missing _id" });
+
+      const fields = {
+        issue_title,
+        issue_text,
+        created_by,
+        assigned_to,
+        status_text,
+        open,
+      };
+
+      const filteredFields = {};
+      for (let key in fields) {
+        if (
+          fields.hasOwnProperty(key) &&
+          fields[key] !== "" &&
+          fields[key] !== undefined
+        ) {
+          filteredFields[key] = fields[key];
+        }
+      }
+
+      if (Object.keys(filteredFields).length === 0) {
+        return res.json({ error: "no update field(s) sent", _id: _id });
+      }
+
+      try {
+        const doc = await Issue.findById(_id);
+
+        if (!doc) return res.json({ error: "could not update", _id: _id });
+        for (let key in filteredFields) {
+          doc[key] = filteredFields[key];
+        }
+
+        await doc.save();
+        res.json({ result: "successfully updated", _id: _id });
+      } catch (error) {
+        console.error(error);
+        return res.json({ error: "could not update", _id: _id });
+      }
     })
 
     .delete(function (req, res) {
