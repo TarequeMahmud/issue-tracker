@@ -13,10 +13,10 @@ module.exports = function (app) {
       }
 
       filter.project = req.params.project;
-      console.log(req.params.project);
 
       try {
         const findIssues = await Issue.find(filter).select("-project");
+        if (!findIssues) return res.json({ error: "could not update" });
 
         const data = [...findIssues];
         return res.json(data);
@@ -117,7 +117,16 @@ module.exports = function (app) {
       }
     })
 
-    .delete(function (req, res) {
+    .delete(async function (req, res) {
       let project = req.params.project;
+      const { _id } = req.body;
+      if (!_id) return res.json({ error: "missing _id" });
+      try {
+        const del = await Issue.findByIdAndDelete(_id);
+        if (!del) return res.json({ error: "could not delete", _id: _id });
+        return res.json({ result: "successfully deleted", _id: _id });
+      } catch (error) {
+        return res.json({ error: "could not delete", _id: _id });
+      }
     });
 };
