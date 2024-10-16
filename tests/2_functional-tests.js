@@ -38,7 +38,7 @@ suite("Functional Tests", function () {
           done();
         });
     });
-    //test-3
+    //get-3
     test("View issues on a project with multiple filters", (done) => {
       chai
         .request(server)
@@ -157,6 +157,117 @@ suite("Functional Tests", function () {
             "response should have an error property"
           );
           assert.equal(res.body.error, "required field(s) missing");
+
+          done();
+        });
+    });
+  });
+  suite("Test Put Route", () => {
+    //put-1
+    test("Update one field on an issue", (done) => {
+      chai
+        .request(server)
+        .keepOpen()
+        .put("/api/issues/apitest")
+        .send({
+          _id: "670bf185b096400780e62a27",
+          open: "true",
+        })
+        .end(function (err, res) {
+          assert.equal(res.status, 200);
+
+          assert.isObject(res.body, "response should be an object");
+          assert.property(res.body, "result", "response should have an result");
+          assert.property(res.body, "_id", "response should have the id");
+          assert.equal(res.body._id, "670bf185b096400780e62a27");
+          assert.equal(res.body.result, "successfully updated");
+
+          done();
+        });
+    });
+    //put-2
+    test("Update multiple fields on an issue", (done) => {
+      chai
+        .request(server)
+        .keepOpen()
+        .put("/api/issues/apitest")
+        .send({
+          _id: "670bf185b096400780e62a27",
+          issue_title: "dfadsfa",
+          issue_text: "dasfdsafa",
+        })
+        .end(function (err, res) {
+          assert.equal(res.status, 200);
+
+          assert.isObject(res.body, "response should be an object");
+          assert.property(res.body, "result", "response should have an result");
+          assert.property(res.body, "_id", "response should have the id");
+          assert.equal(res.body._id, "670bf185b096400780e62a27");
+          assert.equal(res.body.result, "successfully updated");
+
+          done();
+        });
+    });
+    //put-3
+    test("Update an issue with missing _id", (done) => {
+      chai
+        .request(server)
+        .keepOpen()
+        .put("/api/issues/apitest")
+        .send({
+          issue_title: "dfadsfa",
+          issue_text: "dasfdsafa",
+        })
+        .end(function (err, res) {
+          assert.equal(res.status, 200);
+
+          assert.isObject(res.body, "response should be an object");
+          assert.property(res.body, "error", "response should have an error");
+          assert.equal(res.body.error, "missing _id");
+
+          done();
+        });
+    });
+    //put-4
+    test("Update an issue with no fields to update", (done) => {
+      chai
+        .request(server)
+        .keepOpen()
+        .put("/api/issues/apitest")
+        .send({
+          _id: "670bf185b096400780e62a27",
+        })
+        .end(function (err, res) {
+          assert.equal(res.status, 200);
+
+          assert.isObject(res.body, "response should be an object");
+          assert.property(res.body, "error", "response should have an error");
+          assert.property(res.body, "_id", "response should have the id");
+          assert.equal(res.body._id, "670bf185b096400780e62a27");
+          assert.equal(res.body.error, "no update field(s) sent");
+
+          done();
+        });
+    });
+    //put-5
+    test("Update an issue with an invalid _id", (done) => {
+      chai
+        .request(server)
+        .keepOpen()
+        .put("/api/issues/apitest")
+        .send({
+          _id: "67abf185b096400780e6212z",
+          issue_title: "dfadsfa",
+          issue_text: "dasfdsafa",
+        })
+        .end(function (err, res) {
+          assert.equal(res.status, 200);
+
+          assert.isObject(res.body, "response should be an object");
+          assert.property(res.body, "error", "response should have an error");
+          assert.property(res.body, "_id", "response should have the id");
+          assert.equal(res.body._id, "67abf185b096400780e6212z");
+          assert.equal(res.body.error, "could not update");
 
           done();
         });
