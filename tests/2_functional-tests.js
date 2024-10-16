@@ -6,7 +6,7 @@ const server = require("../server");
 chai.use(chaiHttp);
 
 suite("Functional Tests", function () {
-  suite("Check Get Route", function () {
+  suite("GET /api/issues/{project} - View issues for a project", function () {
     //get-1
     test("View issues on a project", (done) => {
       chai
@@ -57,7 +57,7 @@ suite("Functional Tests", function () {
     });
   });
 
-  suite("Test Post Route", () => {
+  suite("POST /api/issues/{project} - Create a new issue", () => {
     //post-1
     test("Create an issue with every field", (done) => {
       chai
@@ -162,7 +162,7 @@ suite("Functional Tests", function () {
         });
     });
   });
-  suite("Test Put Route", () => {
+  suite("PUT /api/issues/{project} - Update an issue", () => {
     //put-1
     test("Update one field on an issue", (done) => {
       chai
@@ -268,6 +268,67 @@ suite("Functional Tests", function () {
           assert.property(res.body, "_id", "response should have the id");
           assert.equal(res.body._id, "67abf185b096400780e6212z");
           assert.equal(res.body.error, "could not update");
+
+          done();
+        });
+    });
+  });
+  suite("DELETE /api/issues/{project} - Delete an issue'", () => {
+    //delete-1
+    test("Delete an issue", (done) => {
+      chai
+        .request(server)
+        .keepOpen()
+        .delete("/api/issues/apitest")
+        .send({
+          _id: "670f4345fd065940e1878a75",
+        })
+        .end(function (err, res) {
+          assert.equal(res.status, 200);
+
+          assert.isObject(res.body, "response should be an object");
+          assert.property(res.body, "result", "response should have success");
+          assert.property(res.body, "_id", "response should have the id");
+          assert.equal(res.body._id, "670f4345fd065940e1878a75");
+          assert.equal(res.body.result, "successfully deleted");
+
+          done();
+        });
+    });
+    //delete-2
+    test("Delete an issue with an invalid _id", (done) => {
+      chai
+        .request(server)
+        .keepOpen()
+        .delete("/api/issues/apitest")
+        .send({
+          _id: "670f3df31e5c3c769f341c92",
+        })
+        .end(function (err, res) {
+          assert.equal(res.status, 200);
+
+          assert.isObject(res.body, "response should be an object");
+          assert.property(res.body, "error", "response should have success");
+          assert.property(res.body, "_id", "response should have the id");
+          assert.equal(res.body._id, "670f3df31e5c3c769f341c92");
+          assert.equal(res.body.error, "could not delete");
+
+          done();
+        });
+    });
+    //delete-3
+    test("Delete an issue with missing _id", (done) => {
+      chai
+        .request(server)
+        .keepOpen()
+        .delete("/api/issues/apitest")
+        .send({})
+        .end(function (err, res) {
+          assert.equal(res.status, 200);
+
+          assert.isObject(res.body, "response should be an object");
+          assert.property(res.body, "error", "response should have success");
+          assert.equal(res.body.error, "missing _id");
 
           done();
         });

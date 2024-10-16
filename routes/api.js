@@ -109,7 +109,6 @@ module.exports = function (app) {
         await doc.save();
         res.json({ result: "successfully updated", _id: _id });
       } catch (error) {
-        console.error(error);
         return res.json({ error: "could not update", _id: _id });
       }
     })
